@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NSIC Learn</title>
+    <link rel="icon" type="image/svg+xml" href="https://nsic.co.in/images/newNS_70Years.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --transition-speed: 0.3s;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+    
+        html.light {
+            --primary: #2563eb; 
+            --on-primary: #ffffff;
+            --primary-container: #dbeafe;
+            --on-primary-container: #1e40af;
+            --secondary: #575e71;
+            --on-secondary: #ffffff;
+            --background: #f8f2f0;
+            --on-background: #1f1b1a;
+            --surface: #fffbff;
+            --on-surface: #1f1b1a;
+            --surface-variant: #e1e2ec;
+            --on-surface-variant: #44474f;
+            --outline: #d1c3b9;
+            --shadow: #d3c4bc;
+            --success: #16a34a;
+            --error: #dc2626;
+        }
+
+        html.dark {
+            --primary: #60a5fa; /* Lighter NSIC Blue */
+            --on-primary: #1e3a8a;
+            --primary-container: #1e40af;
+            --on-primary-container: #dbeafe;
+            --secondary: #c1c6dd;
+            --on-secondary: #2a3042;
+            --background: #1a1c1e;
+            --on-background: #e2e2e6;
+            --surface: #1a1c1e;
+            --on-surface: #e2e2e6;
+            --surface-variant: #44474f;
+            --on-surface-variant: #c4c6d0;
+            --outline: #5c6164;
+            --shadow: #000000;
+            --success: #4ade80;
+            --error: #f87171;
+        }
+
+        /* Base Styles */
+        body {
+            background-color: var(--background);
+            color: var(--on-background);
+        }
+        
+        .hidden { display: none !important; }
+        
+        /* Components */
+        .m3-card {
+            background-color: var(--surface);
+            border-radius: 16px;
+            transition: box-shadow var(--transition-speed);
+            border: 1px solid var(--outline);
+            overflow: hidden;
+        }
+        .m3-card:hover {
+            box-shadow: 0 4px 12px 0 rgba(0,0,0,0.1);
+        }
+        html.dark .m3-card:hover {
+             box-shadow: 0 4px 12px 0 rgba(0,0,0,0.4);
+        }
+        .m3-btn {
+            padding: 10px 24px;
+            border-radius: 999px;
+            font-weight: 600;
+            transition: all var(--transition-speed);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: none;
+            cursor: pointer;
+        }
+        .m3-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .m3-btn-filled {
+            background-color: var(--primary);
+            color: var(--on-primary);
+        }
+        .m3-btn-filled:hover:not(:disabled) {
+            box-shadow: 0 2px 8px -1px var(--shadow);
+            filter: brightness(1.1);
+        }
+        .m3-btn-text {
+            background-color: transparent;
+            color: var(--primary);
+        }
+        .m3-btn-text:hover {
+            background-color: var(--primary-container);
+        }
+         .m3-btn-outline {
+            background-color: transparent;
+            color: var(--on-surface-variant);
+            border: 1px solid var(--outline);
+        }
+        .m3-btn-outline:hover {
+            background-color: var(--surface-variant);
+        }
+        .m3-input {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--surface-variant);
+            border: none;
+            border-bottom: 2px solid var(--outline);
+            border-radius: 8px 8px 0 0;
+            outline: none;
+            transition: border-color var(--transition-speed);
+            color: var(--on-surface-variant);
+        }
+        .m3-input:focus {
+            border-bottom-color: var(--primary);
+        }
+        .progress-bar {
+            background-color: var(--surface-variant);
+            border-radius: 9999px;
+            overflow: hidden;
+            height: 8px;
+        }
+        .progress-fill {
+            background-color: var(--primary);
+            height: 100%;
+            transition: width 0.5s ease-in-out;
+        }
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 50;
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.3s;
+        }
+        .modal-content {
+            background-color: var(--surface);
+            border-radius: 28px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            animation: slideUp 0.3s;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .role-selector-wrapper {
+            background-color: var(--surface-variant);
+            border-radius: 999px;
+            padding: 4px;
+            display: flex;
+        }
+        .role-btn {
+            transition: all 0.2s ease-in-out;
+            color: var(--on-surface-variant);
+            border: 2px solid transparent;
+        }
+        .role-btn.active {
+            background-color: var(--primary);
+            color: var(--on-primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-color: var(--primary);
+        }
+
+        .dashboard-nav-item.active {
+            background-color: var(--primary-container);
+            color: var(--on-primary-container);
+        }
+
+        .achievement-card.earned {
+            border-color: var(--success);
+            background-color: var(--primary-container);
+        }
+        .achievement-card.earned .achievement-icon {
+            filter: grayscale(0%);
+        }
+        .achievement-icon {
+            filter: grayscale(100%);
+            transition: filter 0.3s;
+        }
+        .curriculum-item.completed {
+            color: var(--success);
+        }
+        .curriculum-item:not(.completed):hover {
+            background-color: var(--surface-variant);
+        }
+        .curriculum-item.active {
+            background-color: var(--primary-container);
+        }
+        
+        #notificationToast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translate(-50%, 150%);
+            background-color: var(--surface);
+            color: var(--on-surface);
+            padding: 16px 24px;
+            border-radius: 16px;
+            border: 1px solid var(--outline);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            z-index: 100;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #notificationToast.show {
+            transform: translate(-50%, 0);
+        }
+        
+        .footer-link {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            color: var(--on-surface-variant);
+            transition: color 0.2s;
+        }
+        .footer-link:hover {
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Main Container -->
+    <div id="app" class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-surface sticky top-0 z-40 border-b border-outline">
+            <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+                <div id="homeBrand" class="flex items-center space-x-4 cursor-pointer">
+                    <img src="https://nsic.co.in/images/newNS_70Years.png" alt="NSIC Logo" class="h-10">
+                    <h1 class="text-xl font-bold text-on-surface"><strong>NSIC Learn</strong></h1>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <div id="nav-links" class="hidden md:flex items-center space-x-2 text-on-surface-variant font-medium">
+                        <button class="m3-btn m3-btn-text" data-page="home">Home</button>
+                        <button class="m3-btn m3-btn-text" data-page="courses">Courses</button>
+                         <button class="m3-btn m3-btn-text" data-page="about">About</button>
+                    </div>
+                    <div id="user-menu" class="hidden relative">
+                         <button id="userMenuBtn" class="flex items-center space-x-2 p-1 rounded-full hover:bg-surface-variant transition-colors">
+                            <img id="userAvatar" class="w-8 h-8 rounded-full" src="data:image/png;base64,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">
+                            <span id="userNameDisplay" class="font-semibold text-sm text-on-surface"></span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-on-surface-variant"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div id="userDropdown" class="absolute right-0 mt-2 w-48 bg-surface rounded-xl shadow-lg border border-outline hidden z-50 overflow-hidden">
+                            <a href="#" data-page="dashboard" class="dropdown-item block px-4 py-3 text-sm text-on-surface hover:bg-surface-variant">Dashboard</a>
+                            <a href="#" id="logoutBtn" class="dropdown-item block w-full text-left px-4 py-3 text-sm text-error hover:bg-surface-variant">Logout</a>
+                        </div>
+                    </div>
+                    <div id="guest-menu" class="flex items-center">
+                        <button id="login-nav-btn" class="m3-btn m3-btn-text text-sm">Login</button>
+                        <button id="register-nav-btn" class="m3-btn m3-btn-filled text-sm ml-2">Register</button>
+                    </div>
+                    <button id="dark-mode-toggle" class="p-2 rounded-full text-on-surface-variant hover:bg-surface-variant">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sun-icon"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="moon-icon hidden"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                    </button>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Main Content -->
+        <main id="main-content" class="container mx-auto p-4 md:p-6 flex-grow">
+            <!-- Home Page -->
+            <div id="homePage" class="page active">
+                <section class="bg-primary-container rounded-3xl p-8 md:p-16 text-center mb-12 flex flex-col items-center">
+                    <h2 class="text-4xl md:text-6xl font-extrabold text-on-primary-container mb-4">Advance Your Career with NSIC</h2>
+                    <p class="text-lg text-on-primary-container max-w-3xl mx-auto mb-8">Learn from industry experts and gain skills that matter. Join thousands of professionals who have transformed their careers.</p>
+                     <div class="mt-8 w-full max-w-lg mx-auto relative" id="homeSearchWrapper">
+                        <input type="search" id="homeSearchInput" class="m3-input !rounded-full w-full !pl-12" placeholder="What do you want to learn today?">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant h-5 w-5">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <div id="homeSearchSuggestions" class="absolute top-full mt-2 w-full bg-surface rounded-lg shadow-lg border border-outline z-10 hidden overflow-hidden"></div>
+                    </div>
+                </section>
+                <section id="featured-courses">
+                    <h3 class="text-3xl font-bold mb-6 text-on-background text-center">Featured Courses</h3>
+                    <div id="featuredCoursesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+                </section>
+                 <section class="bg-surface-variant py-16 my-12 rounded-2xl">
+                    <div class="container mx-auto grid md:grid-cols-2 gap-8 items-center px-6">
+                        <div>
+                            <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&auto=format&fit=crop" alt="NSIC Training Session" class="rounded-lg shadow-lg">
+                        </div>
+                        <div>
+                            <h2 class="text-3xl font-bold mb-4 text-on-surface-variant">About NSIC</h2>
+                            <p class="mb-6 text-on-surface-variant">National Small Industries Corporation Ltd. (NSIC) has been promoting and supporting Micro, Small & Medium Enterprises since 1955. Our comprehensive training programs help professionals and entrepreneurs develop skills for modern industry needs.</p>
+                            <button class="m3-btn m3-btn-filled" data-page="about">Learn More About NSIC</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <!-- Courses Page -->
+            <div id="coursesPage" class="page hidden">
+                 <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-3xl font-bold text-on-background">All Courses</h2>
+                    <div class="relative w-full max-w-xs">
+                         <input type="search" id="courseSearchInput" class="m3-input !rounded-full pl-10" placeholder="Search for courses...">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </div>
+                 </div>
+                 <div id="courseSearchSuggestions" class="mb-6"></div>
+                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                     <aside class="lg:col-span-1">
+                        <div class="m3-card p-4 sticky top-24">
+                            <h3 class="text-xl font-semibold mb-4">Filters</h3>
+                             <div class="space-y-4">
+                                <div>
+                                    <label for="categoryFilter" class="text-sm font-medium text-on-surface-variant">Category</label>
+                                    <select id="categoryFilter" class="m3-input mt-1"></select>
+                                </div>
+                                <div>
+                                    <label for="levelFilter" class="text-sm font-medium text-on-surface-variant">Level</label>
+                                    <select id="levelFilter" class="m3-input mt-1"></select>
+                                </div>
+                                 <button id="clearFilters" class="w-full m3-btn m3-btn-outline">Clear Filters</button>
+                            </div>
+                        </div>
+                     </aside>
+                     <div class="lg:col-span-3">
+                         <div id="allCoursesGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+                     </div>
+                 </div>
+            </div>
+            
+             <!-- Course Detail Page -->
+            <div id="courseDetailPage" class="page hidden"></div>
+
+             <!-- Learning Page -->
+            <div id="learningPage" class="page hidden"></div>
+
+            <!-- Dashboard Page -->
+            <div id="dashboardPage" class="page hidden">
+                <h2 class="text-3xl font-bold mb-6">My Dashboard</h2>
+                <div class="flex flex-col md:flex-row gap-8">
+                    <aside class="md:w-1/4">
+                        <nav class="flex flex-col space-y-2 sticky top-24">
+                             <button class="dashboard-nav-item active m3-btn justify-start" data-tab="overview">Overview</button>
+                             <button id="profileNav" class="dashboard-nav-item m3-btn justify-start" data-tab="profile">My Profile</button>
+                             <button id="enrolledNav" class="dashboard-nav-item m3-btn justify-start" data-tab="enrolled">My Courses</button>
+                             <button id="wishlistNav" class="dashboard-nav-item m3-btn justify-start" data-tab="wishlist">My Wishlist</button>
+                             <button id="achievementsNav" class="dashboard-nav-item m3-btn justify-start" data-tab="achievements">Achievements</button>
+                             <button id="instructorNav" class="dashboard-nav-item m3-btn justify-start hidden" data-tab="instructor">Instructor Panel</button>
+                        </nav>
+                    </aside>
+                    <main class="flex-1">
+                        <div id="overviewTab" class="dashboard-tab active">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                                <!-- Stats Cards -->
+                                <div class="m3-card p-4"><h4 class="text-on-surface-variant">Enrolled</h4><p id="enrolledCount" class="text-3xl font-bold">0</p></div>
+                                <div class="m3-card p-4"><h4 class="text-on-surface-variant">Completed</h4><p id="completedCount" class="text-3xl font-bold">0</p></div>
+                                <div class="m3-card p-4"><h4 class="text-on-surface-variant">Certificates</h4><p id="certificateCount" class="text-3xl font-bold">0</p></div>
+                                <div class="m3-card p-4"><h4 class="text-on-surface-variant">In Wishlist</h4><p id="wishlistCount" class="text-3xl font-bold">0</p></div>
+                            </div>
+                            <div class="m3-card p-4"><canvas id="progressChart"></canvas></div>
+                        </div>
+                        <div id="profileTab" class="dashboard-tab hidden">
+                            <h3 class="text-2xl font-bold mb-4">My Profile</h3>
+                            <div class="m3-card p-6">
+                                <div class="mb-6">
+                                    <p><strong class="text-on-surface-variant">Name:</strong> <span id="profileName"></span></p>
+                                    <p><strong class="text-on-surface-variant">Email:</strong> <span id="profileEmail"></span></p>
+                                </div>
+                                <hr class="my-6 border-outline">
+                                <h4 class="text-xl font-bold mb-4">Change Password</h4>
+                                <form id="changePasswordForm" class="space-y-4 max-w-sm">
+                                    <input type="password" id="currentPassword" class="m3-input" placeholder="Current Password" required>
+                                    <input type="password" id="newPassword" class="m3-input" placeholder="New Password" required>
+                                    <input type="password" id="confirmPassword" class="m3-input" placeholder="Confirm New Password" required>
+                                    <button type="submit" class="m3-btn m3-btn-filled">Save Changes</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div id="enrolledTab" class="dashboard-tab hidden">
+                             <div id="enrolledCoursesGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+                        </div>
+                         <div id="wishlistTab" class="dashboard-tab hidden">
+                             <div id="wishlistGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+                        </div>
+                        <div id="achievementsTab" class="dashboard-tab hidden">
+                            <h3 class="text-2xl font-bold mb-4">Achievements</h3>
+                             <div id="achievementsList" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+                             <hr class="my-8 border-outline">
+                             <h3 class="text-2xl font-bold mb-4">My Certificates</h3>
+                             <div id="certificatesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+                        </div>
+                        <div id="instructorTab" class="dashboard-tab hidden">
+                             <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-2xl font-bold">My Published Courses</h3>
+                                <button id="createCourseBtn" class="m3-btn m3-btn-filled">Create New Course</button>
+                            </div>
+                            <div id="instructorCoursesGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+                        </div>
+                    </main>
+                </div>
+            </div>
+
+            <!-- About Page -->
+             <div id="aboutPage" class="page hidden">
+                <div class="max-w-4xl mx-auto">
+                    <h2 class="text-4xl font-extrabold text-on-background mb-4 text-center">About NSIC</h2>
+                    <p class="text-xl text-on-surface-variant mb-8 text-center">National Small Industries Corporation Ltd.</p>
+                    <div class="m3-card p-8 space-y-4">
+                        <h3 class="text-2xl font-bold text-primary">Our Mission</h3>
+                        <p>To promote and support Micro, Small & Medium Enterprises (MSMEs) sector by providing integrated support services encompassing Marketing, Technology, Finance and other services.</p>
+                        <h3 class="text-2xl font-bold text-primary">Our Vision</h3>
+                        <p>To be a premier organization fostering the growth of Micro, Small and Medium Enterprises (MSMEs) sector.</p>
+                    </div>
+                </div>
+             </div>
+
+             <!-- Auth Modals -->
+            <div id="loginModal" class="modal-overlay hidden">
+                <div class="modal-content">
+                    <h2 class="text-2xl font-bold text-center text-on-surface mb-6">Login</h2>
+                    <form id="loginForm" class="space-y-4">
+                        <div class="role-selector-wrapper" id="loginRoleSelector">
+                            <button type="button" data-role="student" class="role-btn active flex-1 py-2 px-4 rounded-full text-sm font-medium">Student</button>
+                            <button type="button" data-role="instructor" class="role-btn flex-1 py-2 px-4 rounded-full text-sm font-medium">Instructor</button>
+                        </div>
+                        <input type="email" id="loginEmail" class="m3-input" placeholder="Email" required>
+                        <input type="password" id="loginPassword" class="m3-input" placeholder="Password" required>
+                        <button type="submit" class="w-full m3-btn m3-btn-filled">Login</button>
+                        <p class="text-center text-sm text-on-surface-variant">No account? <button type="button" id="switchToRegister" class="text-primary font-semibold">Register</button></p>
+                    </form>
+                </div>
+            </div>
+            <div id="registerModal" class="modal-overlay hidden">
+                 <div class="modal-content">
+                    <h2 class="text-2xl font-bold text-center text-on-surface mb-6">Register</h2>
+                    <form id="registerForm" class="space-y-4">
+                        <input type="text" id="registerName" class="m3-input" placeholder="Full Name" required>
+                        <input type="email" id="registerEmail" class="m3-input" placeholder="Email" required>
+                        <input type="password" id="registerPassword" class="m3-input" placeholder="Password" required>
+                         <div class="mb-4">
+                            <label class="block text-sm font-medium text-on-surface-variant mb-2 text-center">Register as a:</label>
+                            <div class="role-selector-wrapper" id="registerRoleSelector">
+                                <button type="button" data-role="student" class="role-btn active flex-1 py-2 px-4 rounded-full text-sm font-medium">Student</button>
+                                <button type="button" data-role="instructor" class="role-btn flex-1 py-2 px-4 rounded-full text-sm font-medium">Instructor</button>
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full m3-btn m3-btn-filled">Create Account</button>
+                        <p class="text-center text-sm text-on-surface-variant">Have an account? <button type="button" id="switchToLogin" class="text-primary font-semibold">Login</button></p>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Course Form Modal -->
+            <div id="courseFormModal" class="modal-overlay hidden">
+                 <div class="modal-content">
+                    <h2 id="courseFormTitle" class="text-2xl font-bold text-center text-on-surface mb-6">Create Course</h2>
+                    <form id="courseForm" class="space-y-4">
+                        <input type="text" id="courseTitleInput" class="m3-input" placeholder="Course Title" required>
+                        <textarea id="courseDescInput" class="m3-input" placeholder="Course Description" rows="3" required></textarea>
+                        <input type="url" id="courseImageInput" class="m3-input" placeholder="Image URL (Optional)">
+                        <input type="url" id="courseVideoInput" class="m3-input" placeholder="Intro Video URL (YouTube, Optional)">
+                        <div>
+                            <label for="courseCategoryInput" class="text-sm font-medium text-on-surface-variant">Category</label>
+                            <select id="courseCategoryInput" class="m3-input mt-1" required></select>
+                        </div>
+                         <div>
+                            <label for="courseLevelInput" class="text-sm font-medium text-on-surface-variant">Level</label>
+                            <select id="courseLevelInput" class="m3-input mt-1" required></select>
+                        </div>
+                        <div class="flex justify-end gap-4">
+                            <button type="button" id="cancelCourseForm" class="m3-btn m3-btn-text">Cancel</button>
+                            <button type="submit" class="m3-btn m3-btn-filled">Save Course</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- Alert Modal -->
+            <div id="alertModal" class="modal-overlay hidden">
+                <div class="modal-content max-w-sm">
+                    <p id="alertMessage" class="text-center text-lg"></p>
+                    <button id="alertCloseBtn" class="m3-btn m3-btn-filled w-full mt-4">OK</button>
+                </div>
+            </div>
+            
+        </main>
+        
+        <footer id="footer" class="bg-surface-variant mt-auto">
+            <div class="container mx-auto py-12 px-6">
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-lg font-bold text-on-surface-variant">NSIC Learn</h3>
+                        <p class="mt-2 text-sm text-on-surface-variant">Empowering MSMEs through skill development and professional training since 1955.</p>
+                    </div>
+                    <div>
+                         <h3 class="text-lg font-bold text-on-surface-variant">Quick Links</h3>
+                         <ul class="mt-2 space-y-1">
+                            <li><button class="footer-link" data-page="home">Home</button></li>
+                            <li><button class="footer-link" data-page="about">About Us</button></li>
+                            <li><button class="footer-link" data-page="about">Contact Us</button></li>
+                            <li><button class="footer-link" data-page="about">Privacy Policy</button></li>
+                         </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-outline">
+                <div class="container mx-auto py-4 px-6 text-center text-sm text-on-surface-variant">
+                    &copy; 2025 National Small Industries Corporation Ltd. All rights reserved.
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+     <!-- Achievement Toast -->
+    <div id="notificationToast" class="hidden">
+        <span id="notificationToastIcon" class="text-4xl"></span>
+        <div>
+            <h4 id="notificationToastTitle" class="font-bold">Notification</h4>
+            <p id="notificationToastDesc" class="text-sm text-on-surface-variant"></p>
+        </div>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    class NSICLearningSystem {
+        constructor() {
+            this.state = {
+                currentUser: null,
+                currentPage: 'home',
+                courses: [],
+                users: [],
+            };
+            this.filters = { category: '', level: '' };
+            this.editingCourseId = null;
+            this.categories = [
+                { id: 1, name: "Technical Skills" }, { id: 2, name: "Information Technology" },
+                { id: 3, name: "Digital Marketing" }, { id: 4, name: "Entrepreneurship" }
+            ];
+            this.achievementDefinitions = [
+                { id: 'enroll1', title: "Course Explorer", description: "Enroll in your first course", icon: "🎓", type: "enroll", requirement: 1 },
+                { id: 'enroll3', title: "Dedicated Learner", description: "Enroll in 3 courses", icon: "📚", type: "enroll", requirement: 3 },
+                { id: 'complete1', title: "Course Finisher", description: "Complete your first course", icon: "🏆", type: "complete", requirement: 1 },
+            ];
+            this.init();
+        }
+
+        init() {
+            this.loadState();
+            this.initializeTheme();
+            this.setupEventListeners();
+            this.updateAuthUI();
+            
+            const hash = window.location.hash.substring(1);
+            const page = hash || 'home';
+            this.navigateToPage(page, {}, true);
+
+            window.addEventListener('popstate', (e) => {
+                if (e.state && e.state.page) {
+                    this.navigateToPage(e.state.page, e.state.params || {}, true);
+                }
+            });
+        }
+
+        // --- STATE MANAGEMENT ---
+        loadState() {
+            const courses = localStorage.getItem('nsic_courses');
+            const users = localStorage.getItem('nsic_users');
+            const currentUser = sessionStorage.getItem('nsic_currentUser');
+
+            if (courses) {
+                this.state.courses = JSON.parse(courses);
+            } else {
+                this.seedCourses();
+            }
+
+            if (users) {
+                this.state.users = JSON.parse(users);
+            } else {
+                this.seedUsers();
+            }
+            
+            if (currentUser) {
+                this.state.currentUser = JSON.parse(currentUser);
+            }
+        }
+
+        saveCourses() {
+            localStorage.setItem('nsic_courses', JSON.stringify(this.state.courses));
+        }
+
+        saveUsers() {
+            localStorage.setItem('nsic_users', JSON.stringify(this.state.users));
+        }
+
+        updateCurrentUser(userData) {
+            this.state.currentUser = userData;
+            if (userData) {
+                 const userIndex = this.state.users.findIndex(u => u.id === userData.id);
+                 if (userIndex > -1) {
+                     this.state.users[userIndex] = userData;
+                 } else {
+                     this.state.users.push(userData);
+                 }
+                 this.saveUsers();
+                sessionStorage.setItem('nsic_currentUser', JSON.stringify(userData));
+            } else {
+                sessionStorage.removeItem('nsic_currentUser');
+            }
+        }
+        
+        seedCourses() {
+            const instructorId = 101;
+            this.state.courses = [
+                { id: 1, instructorId, title: "Entrepreneurship Development", instructor: "Dr. Rajesh Kumar", category: "Entrepreneurship", level: "Intermediate", rating: 4.8, image: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400&h=250&fit=crop', description: "Learn the core principles of entrepreneurship and how to build a successful business from the ground up.", curriculum: [{title: "Intro"}, {title: "Business Plan"}, {title:"Funding"}], videoUrl: "https://www.youtube.com/watch?v=U3k53e9-A28" },
+                { id: 2, instructorId, title: "Digital Marketing for MSMEs", instructor: "Prof. Priya Sharma", category: "Digital Marketing", level: "Advanced", rating: 4.9, image: 'https://images.unsplash.com/photo-1557862921-37829c790f19?w=400&h=250&fit=crop', description: "Master digital marketing strategies tailored for Micro, Small & Medium Enterprises to boost online presence.", curriculum: [{title: "SEO Basics"}, {title: "Social Media"}, {title:"Email Marketing"}], videoUrl: "" },
+                { id: 3, instructorId, title: "E-commerce & Online Selling", instructor: "Er. Sunil Singh", category: "Digital Marketing", level: "Beginner", rating: 4.7, image: 'https://images.unsplash.com/photo-1522204523234-8729aa6e3d5f?w=400&h=250&fit=crop', description: "A beginner's guide to setting up and managing a successful e-commerce store and selling products online.", curriculum: [{title: "Platform Setup"}, {title: "Product Listing"}, {title:"Payments"}], videoUrl: "" },
+                { id: 4, instructorId, title: "Advanced Excel for Business", instructor: "Dr. Rajesh Kumar", category: "Technical Skills", level: "Intermediate", rating: 4.8, image: '', featured: true, description: "Unlock the power of Advanced Excel for data analysis, reporting, and business intelligence.", curriculum: [{title: "Formulas"}, {title: "Pivot Tables"}, {title:"Macros"}], videoUrl: "https://www.youtube.com/watch?v=Vl0H-qTclOg" },
+                { id: 5, instructorId, title: "AI in Business Automation", instructor: "Prof. Priya Sharma", category: "Information Technology", level: "Advanced", rating: 4.9, image: 'https://images.unsplash.com/photo-1620712943543-aebc69232d61?w=400&h=250&fit=crop', featured: true, description: "Explore how Artificial Intelligence is revolutionizing business automation and efficiency.", curriculum: [{title: "AI Concepts"}, {title: "Automation Tools"}, {title:"Implementation"}], videoUrl: "" },
+                { id: 6, instructorId, title: "CAD/CAM with MASTERCAM", instructor: "Er. Sunil Singh", category: "Technical Skills", level: "Beginner", rating: 4.7, image: 'https://images.unsplash.com/photo-1593349480503-685d0a4a03a4?w=400&h=250&fit=crop', featured: true, description: "An introductory course to Computer-Aided Design and Manufacturing using MASTERCAM software.", curriculum: [{title: "2D Design"}, {title: "3D Modeling"}, {title:"Toolpaths"}], videoUrl: "" },
+            ];
+            this.saveCourses();
+        }
+        
+        seedUsers() {
+            this.state.users = [
+                { id: 101, name: "Dr. Rajesh Kumar", email: "instructor@nsic.com", password: "password", role: "instructor" },
+                { id: 102, name: "Student User", email: "student@nsic.com", password: "password", role: "student", enrolledCourses: [], wishlist: [], achievements: [] }
+            ];
+            this.saveUsers();
+        }
+
+        // --- THEME ---
+        initializeTheme() {
+            const savedTheme = localStorage.getItem('nsic-theme') || 'light';
+            this.applyTheme(savedTheme);
+        }
+        applyTheme(theme) {
+            document.documentElement.className = theme;
+            document.querySelector('.sun-icon').classList.toggle('hidden', theme === 'dark');
+            document.querySelector('.moon-icon').classList.toggle('hidden', theme === 'light');
+            localStorage.setItem('nsic-theme', theme);
+        }
+        toggleTheme() {
+            const newTheme = document.documentElement.className === 'light' ? 'dark' : 'light';
+            this.applyTheme(newTheme);
+        }
+        
+        // --- EVENT LISTENERS ---
+        setupEventListeners() {
+            document.getElementById('dark-mode-toggle').addEventListener('click', () => this.toggleTheme());
+            document.getElementById('homeBrand').addEventListener('click', () => this.navigateToPage('home'));
+            document.querySelectorAll('[data-page]').forEach(el => {
+                if(!el.classList.contains('dropdown-item') && !el.classList.contains('footer-link')) { 
+                    el.addEventListener('click', (e) => this.navigateToPage(e.currentTarget.dataset.page));
+                }
+            });
+            document.getElementById('login-nav-btn').addEventListener('click', () => this.openModal('loginModal'));
+            document.getElementById('register-nav-btn').addEventListener('click', () => this.openModal('registerModal'));
+            document.getElementById('switchToRegister').addEventListener('click', () => { this.closeModal('loginModal'); this.openModal('registerModal'); });
+            document.getElementById('switchToLogin').addEventListener('click', () => { this.closeModal('registerModal'); this.openModal('loginModal'); });
+            document.getElementById('loginForm').addEventListener('submit', (e) => this.handleLogin(e));
+            document.getElementById('registerForm').addEventListener('submit', (e) => this.handleRegister(e));
+            document.getElementById('homeSearchInput').addEventListener('input', (e) => this.handleHomeSearch(e));
+            document.getElementById('courseSearchInput').addEventListener('input', (e) => this.handleCourseSearch(e));
+            document.getElementById('categoryFilter').addEventListener('change', () => this.applyFilters());
+            document.getElementById('levelFilter').addEventListener('change', () => this.applyFilters());
+            document.getElementById('clearFilters').addEventListener('click', () => this.clearFilters());
+            document.getElementById('createCourseBtn').addEventListener('click', () => this.showCourseForm());
+            document.getElementById('courseForm').addEventListener('submit', (e) => this.handleCourseFormSubmit(e));
+            document.getElementById('cancelCourseForm').addEventListener('click', () => this.closeModal('courseFormModal'));
+            document.getElementById('changePasswordForm').addEventListener('submit', (e) => this.handleChangePassword(e));
+
+
+            document.addEventListener('click', (e) => {
+                if(e.target.classList.contains('modal-overlay')) this.closeAllModals();
+                if(e.target.id === 'alertCloseBtn') this.closeAllModals();
+
+                const courseCard = e.target.closest('.course-card');
+                 if (courseCard && this.state.currentPage !== 'learning') {
+                    const courseId = parseInt(courseCard.dataset.courseId);
+                    const isEnrolled = this.state.currentUser?.role === 'student' && this.state.currentUser.enrolledCourses.some(c => c.courseId === courseId);
+                    
+                    if (isEnrolled) {
+                        this.navigateToPage('learning', { courseId });
+                    } else {
+                        this.navigateToPage('courseDetail', { courseId });
+                    }
+                }
+                 if(e.target.id === 'enrollBtn') this.handleEnroll(parseInt(e.target.dataset.courseId));
+                 if(e.target.id === 'startLearningBtn') this.navigateToPage('learning', { courseId: parseInt(e.target.dataset.courseId) });
+                 if(e.target.id === 'wishlistBtn') this.handleToggleWishlist(parseInt(e.target.dataset.courseId));
+                
+                 const footerLink = e.target.closest('.footer-link');
+                 if(footerLink) this.navigateToPage(footerLink.dataset.page);
+
+                 const downloadCertBtn = e.target.closest('.download-cert-btn');
+                 if(downloadCertBtn) {
+                     this.showAlert("Certificate download is a demo feature.");
+                 }
+
+                if (!e.target.closest('#homeSearchWrapper')) {
+                    document.getElementById('homeSearchSuggestions').classList.add('hidden');
+                }
+            });
+
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const selector = btn.parentElement;
+                    selector.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                });
+            });
+
+            const userMenuBtn = document.getElementById('userMenuBtn');
+            const userDropdown = document.getElementById('userDropdown');
+            userMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userDropdown.classList.toggle('hidden');
+            });
+            document.addEventListener('click', (e) => {
+                const isClickInside = userMenuBtn.contains(e.target) || userDropdown.contains(e.target);
+                if (!isClickInside) userDropdown.classList.add('hidden');
+                
+                const dropdownItem = e.target.closest('.dropdown-item');
+                if (dropdownItem) {
+                    userDropdown.classList.add('hidden');
+                    if(dropdownItem.id === 'logoutBtn') this.logout();
+                    else if(dropdownItem.dataset.page) this.navigateToPage(dropdownItem.dataset.page);
+                }
+            });
+        }
+        
+        // --- NAVIGATION & RENDERING ---
+        navigateToPage(page, params = {}, noPush = false) {
+            if ((page === 'dashboard' || page === 'learning') && !this.state.currentUser) {
+                this.openModal('loginModal');
+                return;
+            }
+            this.state.currentPage = page;
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            const pageElement = document.getElementById(page + 'Page');
+            if(pageElement) pageElement.classList.remove('hidden');
+            
+            if (!noPush) {
+                try {
+                    history.pushState({ page, params }, '', `#${page}`);
+                } catch(e) {
+                    console.warn("Could not push to history:", e);
+                }
+            }
+
+            this.renderCurrentPage(params);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        renderCurrentPage(params) {
+            switch (this.state.currentPage) {
+                case 'home': this.renderHomePage(); break;
+                case 'courses': this.renderCoursesPage(); break;
+                case 'courseDetail': this.renderCourseDetailPage(params.courseId); break;
+                case 'learning': this.renderLearningPage(params.courseId); break;
+                case 'dashboard': this.renderDashboardPage(); break;
+            }
+        }
+
+        renderHomePage() {
+            const container = document.getElementById('featuredCoursesGrid');
+            container.innerHTML = '';
+            this.state.courses.filter(c => c.featured).slice(0, 3).forEach(course => container.appendChild(this.createCourseCard(course)));
+        }
+
+        renderCoursesPage() {
+            this.populateFilters();
+            this.applyFilters();
+        }
+        
+        renderAllCourses(searchTerm = '') {
+            const container = document.getElementById('allCoursesGrid');
+            container.innerHTML = '';
+            const filtered = this.state.courses.filter(c => 
+                (c.title.toLowerCase().includes(searchTerm.toLowerCase()) || c.instructor.toLowerCase().includes(searchTerm.toLowerCase())) &&
+                (!this.filters.category || c.category === this.filters.category) &&
+                (!this.filters.level || c.level === this.filters.level)
+            );
+            
+            if (filtered.length === 0) {
+                 container.innerHTML = `<p class="col-span-full text-on-surface-variant">No courses found matching your criteria.</p>`;
+            } else {
+                filtered.forEach(course => container.appendChild(this.createCourseCard(course)));
+            }
+        }
+        
+        renderCourseDetailPage(courseId) {
+            const course = this.state.courses.find(c => c.id === courseId);
+            if (!course) { this.navigateToPage('courses'); return; }
+
+            const container = document.getElementById('courseDetailPage');
+            const isEnrolled = this.state.currentUser?.enrolledCourses.some(ec => ec.courseId === course.id);
+            const isInWishlist = this.state.currentUser?.wishlist.includes(course.id);
+
+            let actionButtons;
+            if (this.state.currentUser) {
+                if(this.state.currentUser.role === 'instructor') {
+                     actionButtons = `<p class="mt-4 text-center text-sm text-on-surface-variant">Instructors cannot enroll in courses.</p>`;
+                } else if (isEnrolled) {
+                    actionButtons = `<button id="startLearningBtn" data-course-id="${course.id}" class="w-full mt-6 m3-btn m3-btn-filled bg-green-500 text-white">Start Learning</button>`;
+                } else {
+                    actionButtons = `
+                    <div class="flex items-center gap-4 mt-6">
+                        <button id="enrollBtn" data-course-id="${course.id}" class="w-full m3-btn m3-btn-filled">Enroll Now</button>
+                        <button id="wishlistBtn" data-course-id="${course.id}" class="m3-btn m3-btn-outline !p-3">
+                            ${isInWishlist ? '❤️' : '🤍'}
+                        </button>
+                    </div>`;
+                }
+            } else {
+                 actionButtons = `
+                 <div class="flex items-center gap-4 mt-6">
+                    <button id="enrollBtn" data-course-id="${course.id}" class="w-full m3-btn m3-btn-filled">Enroll Now</button>
+                    <button id="wishlistBtn" data-course-id="${course.id}" class="m3-btn m3-btn-outline !p-3">
+                        🤍
+                    </button>
+                </div>`;
+            }
+            
+            let videoPlayerHTML = '';
+            if (course.videoUrl) {
+                const videoId = this.getYouTubeID(course.videoUrl);
+                if (videoId) {
+                    videoPlayerHTML = `
+                        <div class="aspect-video my-6">
+                            <iframe class="w-full h-full rounded-2xl" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>`;
+                }
+            }
+
+
+            container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="md:col-span-2">
+                        <img src="${course.image || `https://placehold.co/600x400/3B82F6/FFFFFF?text=${encodeURIComponent(course.title)}`}" class="w-full h-auto max-h-96 object-cover rounded-2xl mb-4">
+                        ${videoPlayerHTML}
+                        <h2 class="text-3xl font-bold">${course.title}</h2>
+                        <p class="text-on-surface-variant mb-4">By ${course.instructor}</p>
+                        <p>${course.description}</p>
+                    </div>
+                    <div>
+                         <div class="m3-card p-6 sticky top-24">
+                            <h3 class="text-xl font-bold mb-4">Course Details</h3>
+                            <ul class="space-y-2 text-sm">
+                                <li class="flex justify-between"><span>Category:</span> <strong>${course.category}</strong></li>
+                                <li class="flex justify-between"><span>Level:</span> <strong>${course.level}</strong></li>
+                                <li class="flex justify-between"><span>Rating:</span> <strong>${course.rating} ⭐</strong></li>
+                                <li class="flex justify-between"><span>Lessons:</span> <strong>${course.curriculum.length}</strong></li>
+                            </ul>
+                            ${actionButtons}
+                         </div>
+                    </div>
+                </div>`;
+        }
+        
+        renderLearningPage(courseId) {
+            const course = this.state.courses.find(c => c.id === courseId);
+            const studentCourse = this.state.currentUser.enrolledCourses.find(ec => ec.courseId === courseId);
+            if (!course || !studentCourse) { this.navigateToPage('dashboard'); return; }
+
+            const container = document.getElementById('learningPage');
+            const progress = studentCourse.progress;
+
+            container.innerHTML = `
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                    <aside class="lg:col-span-1 m3-card p-4 h-fit sticky top-24">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold">${course.title}</h3>
+                        </div>
+                        <div class="progress-bar mb-4"><div class="progress-fill" style="width: ${progress}%"></div></div>
+                        <ul id="curriculumList" class="space-y-1">
+                            ${course.curriculum.map((lesson, index) => `
+                                <li data-lesson-index="${index}" class="curriculum-item p-3 rounded-lg cursor-pointer flex items-center gap-2 ${studentCourse.completedLessons.includes(index) ? 'completed' : ''}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${studentCourse.completedLessons.includes(index) ? '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>' : '<circle cx="12" cy="12" r="10"/>'}</svg>
+                                    <span>${lesson.title}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </aside>
+                    <main class="lg:col-span-3 m3-card p-8">
+                        <h2 id="lessonTitle" class="text-3xl font-bold mb-6">Welcome to ${course.title}</h2>
+                        <div id="lessonContent" class="prose dark:prose-invert max-w-none">
+                           Select a lesson from the left to begin.
+                        </div>
+                        <button id="markCompleteBtn" data-course-id="${courseId}" class="m3-btn m3-btn-filled mt-8 hidden">Mark as Complete</button>
+                    </main>
+                </div>
+            `;
+            
+            this.loadLesson(courseId, studentCourse.completedLessons.length < course.curriculum.length ? studentCourse.completedLessons.length : 0);
+
+            container.querySelectorAll('.curriculum-item').forEach(item => {
+                item.addEventListener('click', (e) => this.loadLesson(courseId, parseInt(e.currentTarget.dataset.lessonIndex)));
+            });
+            
+            document.getElementById('markCompleteBtn').addEventListener('click', (e) => this.handleMarkLessonComplete(courseId, parseInt(e.target.dataset.lessonIndex)));
+        }
+
+        renderDashboardPage() {
+             this.showDashboardTab('overview');
+             document.querySelectorAll('.dashboard-nav-item').forEach(btn => {
+                 btn.addEventListener('click', (e) => {
+                     document.querySelectorAll('.dashboard-nav-item').forEach(b => b.classList.remove('active'));
+                     e.currentTarget.classList.add('active');
+                     this.showDashboardTab(e.currentTarget.dataset.tab);
+                 });
+             });
+        }
+        
+        showDashboardTab(tabName) {
+            document.querySelectorAll('.dashboard-tab').forEach(tab => tab.classList.add('hidden'));
+            document.getElementById(`${tabName}Tab`).classList.remove('hidden');
+            if (tabName === 'overview') {
+                this.updateDashboardStats();
+                this.renderDashboardChart();
+            }
+            if (tabName === 'profile') this.renderProfileTab();
+            if (tabName === 'instructor') this.renderInstructorDashboard();
+            if (tabName === 'enrolled') this.renderEnrolledCourses();
+            if (tabName === 'achievements') {
+                this.renderAchievements();
+                this.renderCertificates();
+            }
+            if (tabName === 'wishlist') this.renderWishlist();
+        }
+
+        // --- AUTHENTICATION ---
+        handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const user = this.state.users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                this.updateCurrentUser(user);
+                this.closeModal('loginModal');
+                this.updateAuthUI();
+                this.showWelcomeToast(user.name);
+                this.navigateToPage('home');
+            } else {
+                this.showAlert("Invalid credentials. Please try again.");
+            }
+        }
+
+        handleRegister(e) {
+            e.preventDefault();
+            const email = document.getElementById('registerEmail').value;
+            if (this.state.users.some(u => u.email === email)) {
+                this.showAlert("An account with this email already exists.");
+                return;
+            }
+            const role = document.querySelector('#registerRoleSelector .role-btn.active').dataset.role;
+            const newUser = { 
+                id: Date.now(), 
+                name: document.getElementById('registerName').value, 
+                email: email, 
+                password: document.getElementById('registerPassword').value,
+                role: role, 
+                enrolledCourses: [], 
+                wishlist: [],
+                achievements: []
+            };
+            this.updateCurrentUser(newUser);
+            this.closeModal('registerModal');
+            this.updateAuthUI();
+            this.showWelcomeToast(newUser.name);
+            this.navigateToPage('home');
+        }
+
+        logout() {
+            this.updateCurrentUser(null);
+            this.updateAuthUI();
+            this.navigateToPage('home');
+        }
+        
+        updateAuthUI() {
+            const guestMenu = document.getElementById('guest-menu');
+            const userMenu = document.getElementById('user-menu');
+            const instructorNav = document.getElementById('instructorNav');
+            const userNameDisplay = document.getElementById('userNameDisplay');
+            const studentNavItems = ['profileNav','enrolledNav', 'wishlistNav', 'achievementsNav'];
+
+            if (this.state.currentUser) {
+                guestMenu.classList.add('hidden');
+                userMenu.classList.remove('hidden');
+                userNameDisplay.textContent = this.state.currentUser.name;
+                
+                const isInstructor = this.state.currentUser.role === 'instructor';
+                instructorNav.classList.toggle('hidden', !isInstructor);
+                studentNavItems.forEach(id => {
+                    const el = document.getElementById(id);
+                    if(id === 'profileNav' && el) el.classList.remove('hidden');
+                    else if (el) el.classList.toggle('hidden', isInstructor)
+                });
+            } else {
+                guestMenu.classList.remove('hidden');
+                userMenu.classList.add('hidden');
+                instructorNav.classList.add('hidden');
+                studentNavItems.forEach(id => {
+                     const el = document.getElementById(id);
+                     if (el) el.classList.remove('hidden');
+                });
+            }
+        }
+        
+        // --- STUDENT ACTIONS (REVISED) ---
+        handleEnroll(courseId) {
+             if (!this.state.currentUser) { this.openModal('loginModal'); return; }
+             if (this.state.currentUser.role === 'instructor') return;
+             
+             if (!this.state.currentUser.enrolledCourses.some(c => c.courseId === courseId)) {
+                const newEnrolledCourses = [...this.state.currentUser.enrolledCourses, { courseId: courseId, progress: 0, completedLessons: [] }];
+                const updatedUser = {...this.state.currentUser, enrolledCourses: newEnrolledCourses};
+                this.updateCurrentUser(updatedUser);
+                this.checkAchievements();
+                this.renderCourseDetailPage(courseId); 
+             }
+        }
+        
+        handleToggleWishlist(courseId) {
+            if (!this.state.currentUser) { this.openModal('loginModal'); return; }
+            
+            const isInWishlist = this.state.currentUser.wishlist.includes(courseId);
+            let newWishlist;
+
+            if (isInWishlist) {
+                newWishlist = this.state.currentUser.wishlist.filter(id => id !== courseId);
+            } else {
+                newWishlist = [...this.state.currentUser.wishlist, courseId];
+            }
+            
+            const updatedUser = {...this.state.currentUser, wishlist: newWishlist};
+            this.updateCurrentUser(updatedUser);
+            this.renderCourseDetailPage(courseId);
+        }
+        
+        handleMarkLessonComplete(courseId, lessonIndex) {
+            const studentCourseIndex = this.state.currentUser.enrolledCourses.findIndex(ec => ec.courseId === courseId);
+            if (studentCourseIndex === -1) return;
+
+            const studentCourse = this.state.currentUser.enrolledCourses[studentCourseIndex];
+            if (studentCourse.completedLessons.includes(lessonIndex)) return;
+            
+            const newCompletedLessons = [...studentCourse.completedLessons, lessonIndex];
+            const course = this.state.courses.find(c => c.id === courseId);
+            const totalLessons = course.curriculum.length;
+            const newProgress = Math.round((newCompletedLessons.length / totalLessons) * 100);
+            
+            let completionDate = studentCourse.completionDate;
+            if (newProgress === 100 && !completionDate) {
+                completionDate = new Date().toISOString();
+            }
+
+            const updatedStudentCourse = { ...studentCourse, completedLessons: newCompletedLessons, progress: newProgress, completionDate };
+            const newEnrolledCourses = [...this.state.currentUser.enrolledCourses];
+            newEnrolledCourses[studentCourseIndex] = updatedStudentCourse;
+
+            const updatedUser = { ...this.state.currentUser, enrolledCourses: newEnrolledCourses };
+
+            this.updateCurrentUser(updatedUser);
+            this.checkAchievements();
+            this.loadLesson(courseId, lessonIndex); 
+            
+            const curriculumList = document.getElementById('curriculumList');
+            if (curriculumList) {
+                const progressFill = curriculumList.closest('aside').querySelector('.progress-fill');
+                progressFill.style.width = `${newProgress}%`;
+            }
+        }
+
+        loadLesson(courseId, lessonIndex) {
+            const course = this.state.courses.find(c => c.id === courseId);
+            const studentCourse = this.state.currentUser.enrolledCourses.find(ec => ec.courseId === courseId);
+            const lesson = course.curriculum[lessonIndex];
+            
+            document.getElementById('lessonTitle').textContent = lesson.title;
+            document.getElementById('lessonContent').innerHTML = `<p>This is the content for ${lesson.title}. In a real application, this would contain videos, text, and quizzes.</p>`;
+            
+            const completeBtn = document.getElementById('markCompleteBtn');
+            completeBtn.dataset.lessonIndex = lessonIndex;
+            completeBtn.classList.remove('hidden');
+
+            if(studentCourse.completedLessons.includes(lessonIndex)){
+                completeBtn.textContent = 'Completed';
+                completeBtn.disabled = true;
+                completeBtn.classList.add('bg-green-500');
+            } else {
+                 completeBtn.textContent = 'Mark as Complete';
+                 completeBtn.disabled = false;
+                 completeBtn.classList.remove('bg-green-500');
+            }
+
+            document.querySelectorAll('#curriculumList .curriculum-item').forEach(item => item.classList.remove('active'));
+            document.querySelector(`#curriculumList [data-lesson-index="${lessonIndex}"]`).classList.add('active');
+        }
+
+        // --- DASHBOARD RENDERING --- (Refined)
+        updateDashboardStats() {
+            if(!this.state.currentUser) return;
+            const enrolled = this.state.currentUser.enrolledCourses.length;
+            const completed = this.state.currentUser.enrolledCourses.filter(c => c.progress === 100).length;
+            const wishlist = this.state.currentUser.wishlist.length;
+            
+            document.getElementById('enrolledCount').textContent = enrolled;
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('certificateCount').textContent = completed;
+            document.getElementById('wishlistCount').textContent = wishlist;
+        }
+
+        renderDashboardChart() {
+            if(!this.state.currentUser) return;
+            const completed = this.state.currentUser.enrolledCourses.filter(c => c.progress === 100).length;
+            const inProgress = this.state.currentUser.enrolledCourses.filter(c => c.progress > 0 && c.progress < 100).length;
+            const notStarted = this.state.currentUser.enrolledCourses.filter(c => c.progress === 0).length;
+
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            if(window.progressChartInstance) window.progressChartInstance.destroy();
+            window.progressChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completed', 'In Progress', 'Not Started'],
+                    datasets: [{
+                        data: [completed, inProgress, notStarted],
+                        backgroundColor: ['var(--success)', 'var(--primary)', 'var(--surface-variant)'],
+                        borderColor: 'var(--surface)',
+                        borderWidth: 4,
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+        
+        renderProfileTab() {
+            if (!this.state.currentUser) return;
+            document.getElementById('profileName').textContent = this.state.currentUser.name;
+            document.getElementById('profileEmail').textContent = this.state.currentUser.email;
+            document.getElementById('changePasswordForm').reset();
+        }
+
+        renderEnrolledCourses() {
+            const container = document.getElementById('enrolledCoursesGrid');
+            container.innerHTML = '';
+            if(!this.state.currentUser || this.state.currentUser.enrolledCourses.length === 0){
+                container.innerHTML = `<p class="col-span-full text-on-surface-variant">You have not enrolled in any courses yet.</p>`;
+                return;
+            }
+            this.state.currentUser.enrolledCourses.forEach(enrolled => {
+                const course = this.state.courses.find(c => c.id === enrolled.courseId);
+                if(course) container.appendChild(this.createCourseCard(course, enrolled.progress));
+            });
+        }
+        
+        renderWishlist() {
+            const container = document.getElementById('wishlistGrid');
+            container.innerHTML = '';
+            if(!this.state.currentUser || this.state.currentUser.wishlist.length === 0){
+                container.innerHTML = `<p class="col-span-full text-on-surface-variant">Your wishlist is empty.</p>`;
+                return;
+            }
+            this.state.currentUser.wishlist.forEach(courseId => {
+                const course = this.state.courses.find(c => c.id === courseId);
+                if(course) container.appendChild(this.createCourseCard(course));
+            });
+        }
+        
+        renderAchievements() {
+            const container = document.getElementById('achievementsList');
+            container.innerHTML = '';
+             this.achievementDefinitions.forEach(ach => {
+                const earned = this.checkAchievementStatus(ach);
+                const card = document.createElement('div');
+                card.className = `m3-card p-4 text-center ${earned ? 'earned' : ''}`;
+                card.innerHTML = `
+                    <span class="text-4xl achievement-icon">${ach.icon}</span>
+                    <h4 class="font-bold mt-2">${ach.title}</h4>
+                    <p class="text-sm text-on-surface-variant">${ach.description}</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        renderCertificates() {
+            const container = document.getElementById('certificatesGrid');
+            container.innerHTML = '';
+            const completedCourses = this.state.currentUser?.enrolledCourses.filter(c => c.progress === 100) || [];
+            
+            if (completedCourses.length === 0) {
+                container.innerHTML = `<p class="col-span-full text-on-surface-variant">You have not earned any certificates yet. Complete a course to get started!</p>`;
+                return;
+            }
+
+            completedCourses.forEach(enrolled => {
+                 const course = this.state.courses.find(c => c.id === enrolled.courseId);
+                 if (course) {
+                    container.appendChild(this.createCertificateCard(course, enrolled));
+                 }
+            });
+        }
+
+        checkAchievements() {
+            if (!this.state.currentUser || this.state.currentUser.role !== 'student') return;
+            this.achievementDefinitions.forEach(ach => {
+                const wasEarned = this.state.currentUser.achievements?.includes(ach.id);
+                const isEarned = this.checkAchievementStatus(ach);
+                if(isEarned && !wasEarned) {
+                    const updatedAchievements = [...(this.state.currentUser.achievements || []), ach.id];
+                    const updatedUser = {...this.state.currentUser, achievements: updatedAchievements};
+                    this.updateCurrentUser(updatedUser);
+                    this.showNotificationPopup(ach);
+                }
+            });
+        }
+        
+        checkAchievementStatus(achievement) {
+            if (!this.state.currentUser) return false;
+            switch(achievement.type) {
+                case 'enroll':
+                    return this.state.currentUser.enrolledCourses.length >= achievement.requirement;
+                case 'complete':
+                    return this.state.currentUser.enrolledCourses.filter(c => c.progress === 100).length >= achievement.requirement;
+                default:
+                    return false;
+            }
+        }
+        
+        // --- INSTRUCTOR ACTIONS ---
+        renderInstructorDashboard() {
+            const container = document.getElementById('instructorCoursesGrid');
+            container.innerHTML = '';
+            const instructorCourses = this.state.courses.filter(c => c.instructorId === this.state.currentUser.id);
+
+            if (instructorCourses.length === 0) {
+                container.innerHTML = `<p class="text-on-surface-variant col-span-full">You have not created any courses yet.</p>`;
+            } else {
+                instructorCourses.forEach(course => container.appendChild(this.createInstructorCourseCard(course)));
+            }
+             
+             container.querySelectorAll('.edit-course-btn').forEach(btn => btn.addEventListener('click', (e) => this.showCourseForm(parseInt(e.currentTarget.dataset.courseId))));
+             container.querySelectorAll('.delete-course-btn').forEach(btn => btn.addEventListener('click', (e) => this.handleDeleteCourse(parseInt(e.currentTarget.dataset.courseId))));
+        }
+
+        showCourseForm(courseId = null) {
+            this.editingCourseId = courseId;
+            const form = document.getElementById('courseForm');
+            const title = document.getElementById('courseFormTitle');
+            const catInput = document.getElementById('courseCategoryInput');
+            const levelInput = document.getElementById('courseLevelInput');
+            
+            this.populateFilters(catInput, levelInput);
+            
+            if (courseId) {
+                const course = this.state.courses.find(c => c.id === courseId);
+                title.textContent = "Edit Course";
+                form.elements.courseTitleInput.value = course.title;
+                form.elements.courseDescInput.value = course.description;
+                form.elements.courseImageInput.value = course.image;
+                form.elements.courseVideoInput.value = course.videoUrl || '';
+                form.elements.courseCategoryInput.value = course.category;
+                form.elements.courseLevelInput.value = course.level;
+            } else {
+                title.textContent = "Create New Course";
+                form.reset();
+            }
+            this.openModal('courseFormModal');
+        }
+
+        handleCourseFormSubmit(e) {
+            e.preventDefault();
+            const form = e.target;
+            const title = form.elements.courseTitleInput.value;
+            const courseData = {
+                title: title,
+                description: form.elements.courseDescInput.value,
+                image: form.elements.courseImageInput.value || `https://placehold.co/600x400/3B82F6/FFFFFF?text=${encodeURIComponent(title)}`,
+                videoUrl: form.elements.courseVideoInput.value,
+                category: form.elements.courseCategoryInput.value,
+                level: form.elements.courseLevelInput.value,
+                instructor: this.state.currentUser.name,
+                instructorId: this.state.currentUser.id,
+                rating: (Math.random() * (5 - 4) + 4).toFixed(1),
+                curriculum: [{title: "Module 1"}, {title: "Module 2"}, {title:"Module 3"}]
+            };
+
+            if (this.editingCourseId) {
+                const index = this.state.courses.findIndex(c => c.id === this.editingCourseId);
+                this.state.courses[index] = { ...this.state.courses[index], ...courseData };
+            } else {
+                const newCourse = { id: Date.now(), ...courseData, featured: false };
+                this.state.courses.unshift(newCourse);
+            }
+            this.saveCourses();
+            this.closeModal('courseFormModal');
+            this.renderInstructorDashboard();
+            this.renderAllCourses();
+            this.renderHomePage();
+            this.editingCourseId = null;
+        }
+
+        handleDeleteCourse(courseId) {
+            if (confirm("Are you sure you want to delete this course?")) {
+                this.state.courses = this.state.courses.filter(c => c.id !== courseId);
+                this.saveCourses();
+                this.renderInstructorDashboard();
+                this.renderAllCourses();
+                this.renderHomePage();
+            }
+        }
+        
+        handleChangePassword(e) {
+            e.preventDefault();
+            const form = e.target;
+            const currentPassword = form.elements.currentPassword.value;
+            const newPassword = form.elements.newPassword.value;
+            const confirmPassword = form.elements.confirmPassword.value;
+
+            if (currentPassword !== this.state.currentUser.password) {
+                this.showAlert("Current password is incorrect.");
+                return;
+            }
+            if (newPassword.length < 6) {
+                this.showAlert("New password must be at least 6 characters long.");
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                this.showAlert("New passwords do not match.");
+                return;
+            }
+
+            const updatedUser = { ...this.state.currentUser, password: newPassword };
+            this.updateCurrentUser(updatedUser);
+            this.showAlert("Password changed successfully!");
+            form.reset();
+        }
+
+        // --- UI UTILS ---
+        createCourseCard(course, progress = null) {
+            const card = document.createElement('div');
+            card.className = 'm3-card cursor-pointer course-card';
+            card.dataset.courseId = course.id;
+            card.innerHTML = `
+                <img src="${course.image || `https://placehold.co/600x400/3B82F6/FFFFFF?text=${encodeURIComponent(course.title)}`}" alt="${course.title}" class="w-full h-40 object-cover">
+                <div class="p-4">
+                    <h4 class="font-bold text-lg">${course.title}</h4>
+                    <p class="text-sm text-on-surface-variant">by ${course.instructor}</p>
+                    <div class="flex items-center mt-2">
+                        <span class="text-yellow-500 font-bold">${course.rating}</span>
+                        <span class="text-xs ml-2 text-on-surface-variant">(1.2k reviews)</span>
+                    </div>
+                    ${progress !== null ? `
+                    <div class="mt-4">
+                        <div class="progress-bar"><div class="progress-fill" style="width: ${progress}%"></div></div>
+                        <p class="text-xs text-on-surface-variant mt-1">${progress}% complete</p>
+                    </div>` : ''}
+                </div>`;
+            return card;
+        }
+
+        createInstructorCourseCard(course) {
+            const card = document.createElement('div');
+            card.className = 'm3-card';
+            card.innerHTML = `
+                <img src="${course.image || `https://placehold.co/600x400/3B82F6/FFFFFF?text=${encodeURIComponent(course.title)}`}" alt="${course.title}" class="w-full h-40 object-cover">
+                <div class="p-4 flex-grow">
+                    <h4 class="font-bold text-lg truncate">${course.title}</h4>
+                    <p class="text-sm text-on-surface-variant">${course.level} | ${course.category}</p>
+                </div>
+                <div class="p-2 border-t border-outline flex justify-end gap-2">
+                    <button data-course-id="${course.id}" class="edit-course-btn m3-btn m3-btn-text text-sm">Edit</button>
+                    <button data-course-id="${course.id}" class="delete-course-btn m3-btn m3-btn-text text-sm text-red-500 dark:text-red-400">Delete</button>
+                </div>`;
+            return card;
+        }
+        
+        createCertificateCard(course, enrolledCourse) {
+            const card = document.createElement('div');
+            card.className = 'm3-card p-6 flex flex-col items-center text-center bg-primary-container';
+            const date = new Date(enrolledCourse.completionDate).toLocaleDateString();
+
+            card.innerHTML = `
+                <div class="text-4xl mb-4">📜</div>
+                <p class="text-sm text-on-primary-container">Certificate of Completion</p>
+                <h4 class="text-xl font-bold my-2 text-on-primary-container">${course.title}</h4>
+                <p class="text-sm text-on-primary-container">Awarded to</p>
+                <p class="font-bold text-lg text-on-primary-container">${this.state.currentUser.name}</p>
+                <p class="text-xs text-on-primary-container mt-2">On: ${date}</p>
+                <p class="text-xs text-on-primary-container mt-1">ID: CERT-${course.id}-${this.state.currentUser.id}</p>
+                <button class="m3-btn m3-btn-filled mt-4 text-sm download-cert-btn">Download</button>
+            `;
+            return card;
+        }
+
+        populateFilters(catEl = document.getElementById('categoryFilter'), levelEl = document.getElementById('levelFilter')) {
+            if (catEl.options.length <= 1) {
+                catEl.innerHTML = '<option value="">All Categories</option>';
+                this.categories.forEach(cat => catEl.innerHTML += `<option value="${cat.name}">${cat.name}</option>`);
+            }
+            if (levelEl.options.length <= 1) {
+                levelEl.innerHTML = '<option value="">All Levels</option>';
+                ['Beginner', 'Intermediate', 'Advanced'].forEach(level => levelEl.innerHTML += `<option value="${level}">${level}</option>`);
+            }
+        }
+
+        applyFilters() {
+            const searchTerm = document.getElementById('courseSearchInput').value;
+            this.filters.category = document.getElementById('categoryFilter').value;
+            this.filters.level = document.getElementById('levelFilter').value;
+            this.renderAllCourses(searchTerm);
+        }
+
+        clearFilters() {
+            this.filters = { category: '', level: '' };
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('levelFilter').value = '';
+             document.getElementById('courseSearchInput').value = '';
+            this.renderAllCourses();
+        }
+        
+        handleHomeSearch(e) {
+            const searchTerm = e.target.value;
+            const suggestionsContainer = document.getElementById('homeSearchSuggestions');
+            if (searchTerm.length > 1) {
+                const suggestions = this.state.courses.filter(c => c.title.toLowerCase().includes(searchTerm.toLowerCase())).slice(0, 5);
+                if (suggestions.length > 0) {
+                    suggestionsContainer.innerHTML = suggestions.map(s => `<div class="p-3 hover:bg-surface-variant cursor-pointer course-card" data-course-id="${s.id}">${s.title}</div>`).join('');
+                    suggestionsContainer.classList.remove('hidden');
+                } else {
+                    suggestionsContainer.innerHTML = '';
+                    suggestionsContainer.classList.add('hidden');
+                }
+            } else {
+                suggestionsContainer.innerHTML = '';
+                suggestionsContainer.classList.add('hidden');
+            }
+        }
+
+        handleCourseSearch(e) {
+            const searchTerm = e.target.value;
+            this.applyFilters();
+        }
+        
+        showAlert(message) {
+            document.getElementById('alertMessage').textContent = message;
+            this.openModal('alertModal');
+        }
+
+        showWelcomeToast(name) {
+            this.showNotificationPopup({icon: '👋', title: `Welcome, ${name}!`, description: 'Enjoy your learning journey.'});
+        }
+
+        showAchievementPopup(achievement) {
+            this.showNotificationPopup(achievement);
+        }
+
+        showNotificationPopup(data) {
+             const toast = document.getElementById('notificationToast');
+            toast.querySelector('#notificationToastIcon').textContent = data.icon;
+            toast.querySelector('#notificationToastTitle').textContent = data.title;
+            toast.querySelector('#notificationToastDesc').textContent = data.description;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                 setTimeout(() => toast.classList.add('hidden'), 500);
+            }, 5000);
+        }
+
+        openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        closeAllModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.classList.add('hidden')); }
+        
+        getYouTubeID(url) {
+            if(!url) return null;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+    }
+
+    new NSICLearningSystem();
+});
+</script>
+
+</body>
+</html>
+
+
