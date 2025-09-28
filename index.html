@@ -509,17 +509,18 @@
             <div class="container mx-auto py-12 px-6">
                 <div class="grid md:grid-cols-2 gap-8">
                     <div>
-                        <h3 class="text-lg font-bold text-on-surface-variant">NSIC Learn</h3>
+                        <h3 class="text-lg font-bold text-on-surface-variant">NSIC-LMS</h3>
                         <p class="mt-2 text-sm text-on-surface-variant">Empowering MSMEs through skill development and professional training since 1955.</p>
                     </div>
                     <div>
                          <h3 class="text-lg font-bold text-on-surface-variant">Quick Links</h3>
-                         <ul class="mt-2 space-y-1">
-                            <li><button class="footer-link" data-page="home">Home</button></li>
-                            <li><button class="footer-link" data-page="about">About Us</button></li>
-                            <li><button class="footer-link" data-page="about">Contact Us</button></li>
-                            <li><button class="footer-link" data-page="about">Privacy Policy</button></li>
-                         </ul>
+                        <ul class="mt-2 space-y-1">
+                        <!-- Changed to <a> tags with href attributes -->
+                        <li><a href="https://www.nsic.co.in/" class="footer-link" data-page="home">Home</a></li>
+                        <li><a href="https://www.nsic.co.in/Corporate/AboutUs" class="footer-link" data-page="about">About Us</a></li>
+                        <li><a href="https://www.nsic.co.in/Corporate/ContactUs" class="footer-link" data-page="about">Contact Us</a></li>
+                        <li><a href="https://www.nsic.co.in/Info/PrivacyPolicies" class="footer-link" data-page="about">Privacy Policy</a></li>
+</ul>
                     </div>
                 </div>
             </div>
@@ -713,7 +714,10 @@ document.addEventListener('DOMContentLoaded', () => {
                  if(e.target.id === 'wishlistBtn') this.handleToggleWishlist(parseInt(e.target.dataset.courseId));
                 
                  const footerLink = e.target.closest('.footer-link');
-                 if(footerLink) this.navigateToPage(footerLink.dataset.page);
+                 if(footerLink) {
+                    e.preventDefault(); // This stops the default link behavior
+                    this.navigateToPage(footerLink.dataset.page);
+                };
 
                  const downloadCertBtn = e.target.closest('.download-cert-btn');
                  if(downloadCertBtn) {
