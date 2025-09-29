@@ -39,7 +39,7 @@
         }
 
         html.dark {
-            --primary: #60a5fa; /* Lighter NSIC Blue */
+            --primary: #60a5fa; 
             --on-primary: #1e3a8a;
             --primary-container: #1e40af;
             --on-primary-container: #dbeafe;
@@ -47,7 +47,7 @@
             --on-secondary: #2a3042;
             --background: #1a1c1e;
             --on-background: #e2e2e6;
-            --surface: #1f2125; /* Was #1a1c1e, made slightly lighter */
+            --surface: #1f2125; 
             --on-surface: #e2e2e6;
             --surface-variant: #44474f;
             --on-surface-variant: #c4c6d0;
@@ -69,13 +69,11 @@
         .m3-card {
             background-color: var(--surface);
             border-radius: 16px;
-            /* CHANGE: Smoother transition and subtle transform */
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             border: 1px solid var(--outline);
             overflow: hidden;
         }
         .m3-card:hover {
-            /* CHANGE: Added a subtle lift effect on hover */
             transform: translateY(-4px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.08);
         }
@@ -103,7 +101,6 @@
             color: var(--on-primary);
         }
         .m3-btn-filled:hover:not(:disabled) {
-            /* CHANGE: A more modern brightness/transform effect */
             filter: brightness(1.05);
             transform: translateY(-2px);
             box-shadow: 0 4px 12px -2px var(--shadow);
@@ -127,17 +124,15 @@
             width: 100%;
             padding: 16px;
             background-color: var(--surface-variant);
-            border: 1px solid transparent; /* CHANGE: Set initial border to transparent */
+            border: 1px solid transparent; 
             border-bottom: 2px solid var(--outline);
             border-radius: 8px 8px 0 0;
             outline: none;
-            /* CHANGE: Transition all properties for smoothness */
             transition: all var(--transition-speed);
             color: var(--on-surface-variant);
         }
         .m3-input:focus {
             border-bottom-color: var(--primary);
-            /* CHANGE: Add a subtle ring effect for focus */
             box-shadow: 0 0 0 2px var(--primary-container);
             background-color: var(--surface);
         }
